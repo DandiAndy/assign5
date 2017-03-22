@@ -5,7 +5,7 @@ import glob
 from math import log
 
 def CleanData(f, filename):
-    print("...clean data...")
+    #print("...clean data...")
     
     #to clean the data we change every string to be lowercase
     lines = [l.lower() for l in f]
@@ -13,7 +13,7 @@ def CleanData(f, filename):
         out.writelines(lines)
     
 def BuildClassifier(tuples, class_vals,  attr_vals, class_index, attributes):
-    print("...naive bayes...")
+    #print("...naive bayes...")
     for t in tuples:
         #get count of class index values
         if class_vals.has_key(t[class_index]):
@@ -35,13 +35,14 @@ def BuildClassifier(tuples, class_vals,  attr_vals, class_index, attributes):
     
     
 def Classify(tuples, class_attr, attr_vals, attributes, class_index):
-    print("...classify...")
+    #print("...classify...")
+    f = open("Result.txt", 'w+')
     for a in attributes:
-        print("{} ".format(a)),
-    print("Classification")
+        f.write("{}\t".format(a).expandtabs(15)),
+    f.write("Classification\n")
     count = sum(class_attr.values())
     m = 0.2
-    print(attr_vals)
+    #print(attr_vals)
     #create ditionary for p values to avoid lack of label
     temp = attr_vals.keys()
     p_list = {}
@@ -55,6 +56,7 @@ def Classify(tuples, class_attr, attr_vals, attributes, class_index):
     #print(p_list)
 
     #run through tuples and and attribute to create the scores for each of the classes attribute values to determine the prediction
+    accuracy = 0
     for t in tuples:
         key_list = class_attr.keys()
         class_val = ""
@@ -74,7 +76,7 @@ def Classify(tuples, class_attr, attr_vals, attributes, class_index):
                         nb_value *= attr_count
                         #print(nb_value)
                 if b:
-                    print("{}\t\t".format(a)),
+                    f.write("{}\t".format(a).expandtabs(15)),
                 i += 1
             #print("{} : {}".format(key, nb_value))
             if key_val < nb_value:
@@ -82,12 +84,15 @@ def Classify(tuples, class_attr, attr_vals, attributes, class_index):
                 class_val = str(key)
             #print("{} {}".format(key_val, nb_value))
             b = False
-        print("{}".format(class_val))
+        f.write("{}\n".format(class_val))
+        if t[class_index] == class_val:
+            accuracy += 1
+    f.write("Accuracy: {}/{}".format(accuracy, len(tuples)))    
 
 
 
 if __name__ == "__main__":
-    print("...main...")
+    #print("...main...")
 
     #open training file
     filename = raw_input("Please enter the training data's filename: ")
@@ -130,7 +135,7 @@ if __name__ == "__main__":
     attr_vals = {}
             
     BuildClassifier(train_tuples, class_attr_vals, attr_vals, class_index, attributes)
-    print("Class Values:\n{}\nAttribute Values:\n{}".format(class_attr_vals, attr_vals))
+    #print("Class Values:\n{}\nAttribute Values:\n{}".format(class_attr_vals, attr_vals))
     #open testing file
     filename = raw_input("Please enter the testing data's filename (Make sure that the file has the same # of attributes and the same attribute values as the training set): ")
     f = None
